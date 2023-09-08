@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.3'
+    id 'io.spring.dependency-management' version '1.1.3'
+    id 'checkstyle'
+}
+
+apply from: 'version.gradle'
+
+group = 'pl.popravko'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly.extendsFrom annotationProcessor
+    querydsl.extendsFrom implementation, runtimeOnly, compileOnly
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'org.projectlombok:lombok:1.18.26'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation "com.querydsl:querydsl-jpa:${versions.querydsl}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:${versions.querydsl}:jakarta"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api:${versions.persistence}"
+
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jsr310}"
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versions.openapi}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:mysql:${versions.testcontainers}"
+}
+
+checkstyle {
+    toolVersion = "10.3.3"
+    configFile = rootProject.file('./checkstyle.xml')
+    ignoreFailures = false
+    showViolations = true
+}
+
+tasks.named('checkstyleMain', Checkstyle) {
+    source 'src/main/java'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
